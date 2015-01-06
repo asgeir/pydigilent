@@ -200,7 +200,7 @@ _FDwfEnum.restype = bool
 
 def FDwfEnum(enumFilter):
 	tmp = ctypes.c_int()
-	return (_FDwfEnum(ctypes.byref(tmp)), tmp.value)
+	return (_FDwfEnum(enumFilter, ctypes.byref(tmp)), tmp.value)
 
 _FDwfEnumDeviceType = _dwf.FDwfEnumDeviceType
 _FDwfEnumDeviceType.argtypes = [ctypes.c_int, ctypes.POINTER(DEVID), ctypes.POINTER(DEVVER)]
@@ -209,7 +209,7 @@ _FDwfEnumDeviceType.restype = bool
 def FDwfEnumDeviceType(idxDevice):
 	devid = DEVID()
 	devver = DEVVER()
-	return (_FDwfEnumDeviceType(idxDevice, ctypes.byref(devid), ctypes.byref(devver)), devid.value, devver.value)
+	return (_FDwfEnumDeviceType(idxDevice, ctypes.byref(devid), ctypes.byref(devver)), devid, devver)
 
 _FDwfEnumDeviceIsOpened = _dwf.FDwfEnumDeviceIsOpened
 _FDwfEnumDeviceIsOpened.argtypes = [ctypes.c_int, _types.c_byte_p]
