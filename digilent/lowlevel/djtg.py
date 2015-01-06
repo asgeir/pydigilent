@@ -121,21 +121,37 @@ class JtagBatchBuffer(object):
 		self._buffer.append(chr(outputEnable << 1 | resetState))
 
 
-DjtgGetVersion = _djtg.DjtgGetVersion
-DjtgGetVersion.argtypes = [ctypes.POINTER(ctypes.c_char * 32)]
-DjtgGetVersion.restype = bool
+_DjtgGetVersion = _djtg.DjtgGetVersion
+_DjtgGetVersion.argtypes = [ctypes.POINTER(ctypes.c_char * 32)]
+_DjtgGetVersion.restype = bool
 
-DjtgGetPortCount = _djtg.DjtgGetPortCount
-DjtgGetPortCount.argtypes = [HIF, ctypes.POINTER(ctypes.c_int32)]
-DjtgGetPortCount.restype = bool
+def DjtgGetVersion():
+	tmp = ctypes.create_string_buffer(32)
+	return (_DjtgGetVersion(ctypes.byref(tmp)), tmp.value)
 
-DjtgGetPortProperties = _djtg.DjtgGetPortProperties
-DjtgGetPortProperties.argtypes = [HIF, ctypes.c_int32, ctypes.POINTER(ctypes.c_uint32)]
-DjtgGetPortProperties.restype = bool
+_DjtgGetPortCount = _djtg.DjtgGetPortCount
+_DjtgGetPortCount.argtypes = [HIF, ctypes.POINTER(ctypes.c_int32)]
+_DjtgGetPortCount.restype = bool
 
-DjtgGetBatchProperties = _djtg.DjtgGetBatchProperties
-DjtgGetBatchProperties.argtypes = [HIF, ctypes.c_int32, ctypes.POINTER(ctypes.c_uint32)]
-DjtgGetBatchProperties.restype = bool
+def DjtgGetPortCount(hif):
+	value = ctypes.c_int32()
+	return (_DjtgGetPortCount(hif, ctypes.byref(value)), value.value)
+
+_DjtgGetPortProperties = _djtg.DjtgGetPortProperties
+_DjtgGetPortProperties.argtypes = [HIF, ctypes.c_int32, ctypes.POINTER(ctypes.c_uint32)]
+_DjtgGetPortProperties.restype = bool
+
+def DjtgGetPortProperties(hif, prtReq):
+	info = ctypes.c_uint32()
+	return (_DjtgGetPortProperties(hif, prtReq, ctypes.byref(info)), info.value)
+
+_DjtgGetBatchProperties = _djtg.DjtgGetBatchProperties
+_DjtgGetBatchProperties.argtypes = [HIF, ctypes.c_int32, ctypes.POINTER(ctypes.c_uint32)]
+_DjtgGetBatchProperties.restype = bool
+
+def DjtgGetBatchProperties(hif, prtReq):
+	info = ctypes.c_uint32()
+	return (_DjtgGetBatchProperties(hif, prtReq, ctypes.byref(info)), info.value)
 
 DjtgEnable = _djtg.DjtgEnable
 DjtgEnable.argtypes = [HIF]
@@ -151,21 +167,36 @@ DjtgDisable.restype = bool
 
 
 # configuration functions
-DjtgGetSpeed = _djtg.DjtgGetSpeed
-DjtgGetSpeed.argtypes = [HIF, ctypes.POINTER(ctypes.c_uint32)]
-DjtgGetSpeed.restype = bool
+_DjtgGetSpeed = _djtg.DjtgGetSpeed
+_DjtgGetSpeed.argtypes = [HIF, ctypes.POINTER(ctypes.c_uint32)]
+_DjtgGetSpeed.restype = bool
 
-DjtgSetSpeed = _djtg.DjtgSetSpeed
-DjtgSetSpeed.argtypes = [HIF, ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint32)]
-DjtgSetSpeed.restype = bool
+def DjtgGetSpeed(hif):
+	value = ctypes.c_uint32()
+	return (_DjtgGetSpeed(hif, ctypes.byref(value)), value.value)
+
+_DjtgSetSpeed = _djtg.DjtgSetSpeed
+_DjtgSetSpeed.argtypes = [HIF, ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint32)]
+_DjtgSetSpeed.restype = bool
+
+def DjtgSetSpeed(hif, frqReq):
+	frqSet = ctypes.c_uint32()
+	return (_DjtgSetSpeed(hif, frqReq, ctypes.byref(frqSet)), frqSet.value)
 
 DjtgSetTmsTdiTck = _djtg.DjtgSetTmsTdiTck
 DjtgSetTmsTdiTck.argtypes = [HIF, ctypes.c_byte, ctypes.c_byte, ctypes.c_byte]
 DjtgSetTmsTdiTck.restype = bool
 
-DjtgGetTmsTdiTdoTck = _djtg.DjtgGetTmsTdiTdoTck
-DjtgGetTmsTdiTdoTck.argtypes = [HIF, ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte)]
-DjtgGetTmsTdiTdoTck.restype = bool
+_DjtgGetTmsTdiTdoTck = _djtg.DjtgGetTmsTdiTdoTck
+_DjtgGetTmsTdiTdoTck.argtypes = [HIF, ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte)]
+_DjtgGetTmsTdiTdoTck.restype = bool
+
+def DjtgGetTmsTdiTdoTck(hif):
+	a = ctypes.c_byte()
+	b = ctypes.c_byte()
+	c = ctypes.c_byte()
+	d = ctypes.c_byte()
+	return (_DjtgGetTmsTdiTdoTck(hif, ctypes.byref(a), ctypes.byref(b), ctypes.byref(c), ctypes.byref(d)), a.value, b.value, c.value, d.value)
 
 DjtgSetAuxReset = _djtg.DjtgSetAuxReset
 DjtgSetAuxReset.argtypes = [HIF, ctypes.c_byte, ctypes.c_byte]
@@ -181,9 +212,13 @@ DjtgSyncBuffer.restype = bool
 
 
 # misc. functions
-DjtgWait = _djtg.DjtgWait
-DjtgWait.argtypes = [HIF, ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint32)]
-DjtgWait.restype = bool
+_DjtgWait = _djtg.DjtgWait
+_DjtgWait.argtypes = [HIF, ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint32)]
+_DjtgWait.restype = bool
+
+def DjtgWait(hif, tusWait):
+	value = ctypes.c_uint32()
+	return (_DjtgWait(hif, tusWait, ctypes.byref(value)), value.value)
 
 
 # overlapped functions
