@@ -268,8 +268,6 @@ class Jtag(object):
 		for i in range(len(buffer)):
 			send_buffer[i] = ctypes.c_ubyte(buffer[i] & 0xff)
 
-		print buffer[:]
-
 		recv_buffer = None
 		if num_bytes_received > 0:
 			recv_buffer = (ctypes.c_ubyte * num_bytes_received)()
