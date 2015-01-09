@@ -1,5 +1,4 @@
 import ctypes
-import struct
 import sys
 
 from common import HIF
@@ -49,76 +48,8 @@ cedgeJtgDeselect = 4  # Number of edges for a Deselection Escape
 cedgeJtgSelect   = 6  # Number of edges for a Selection Escape
 cedgeJtgReset    = 8  # Number of edges for a Reset Escape
 
-jcbSetTmsTdiTck    = 1
-jcbGetTmsTdiTdoTck = 2
-jcbPutTms          = 3
-jcbPutTmsGetTdo    = 4
-jcbPutTdi          = 5
-jcbPutTdiGetTdo    = 6
-jcbGetTdo          = 7
-jcbClockTck        = 8
-jcbWaitUs          = 9
-jcbSetAuxReset     = 10
-
 djbpWaitUs      = 0x00000001
 djbpSetAuxReset = 0x00000002
-
-class JtagBatchBuffer(object):
-	def __init__(self):
-		object.__init__(self)
-		self._buffer = []
-
-	def clear(self):
-		self._buffer = []
-
-	def buffer(self):
-		return ''.join(self._buffer)
-
-	def SetTmsTdiTck(self, tms, tdi, tck):
-		self._buffer.append(chr(jcbSetTmsTdiTck))
-		self._buffer.append(chr(tms << 2 | tdi << 1 | tck))
-
-	def GetTmsTdiTdoTck(self):
-		self._buffer.append(chr(jcbGetTmsTdiTdoTck))
-
-	def PutTms(self, tmsBytes, cbits):
-		self._buffer.append(chr(jcbPutTms))
-		self._buffer.append(struct.pack('<I', cbits))
-		self._buffer.append(tmsBytes)
-
-	def PutTmsGetTdo(self, tmsBytes, cbits):
-		self._buffer.append(chr(jcbPutTmsGetTdo))
-		self._buffer.append(struct.pack('<I', cbits))
-		self._buffer.append(tmsBytes)
-
-	def PutTdi(self, tdiBytes, cbits, lastTms):
-		self._buffer.append(chr(jcbPutTdi))
-		self._buffer.append(struct.pack('<I', cbits))
-		self._buffer.append(chr(int(lastTms) & 1))
-		self._buffer.append(tdiBytes)
-
-	def PutTdiGetTdo(self, tdiBytes, cbits, lastTms):
-		self._buffer.append(chr(jcbPutTdiGetTdo))
-		self._buffer.append(struct.pack('<I', cbits))
-		self._buffer.append(chr(int(lastTms) & 1))
-		self._buffer.append(tdiBytes)
-
-	def GetTdo(self, cbits, lastTms):
-		self._buffer.append(chr(jcbGetTdo))
-		self._buffer.append(struct.pack('<I', cbits))
-		self._buffer.append(chr(int(lastTms) & 1))
-
-	def ClockTck(self, numTicks):
-		self._buffer.append(chr(jcbClockTck))
-		self._buffer.append(struct.pack('<I', numTicks))
-
-	def WaitUs(self, numUs):
-		self._buffer.append(chr(jcbWaitUs))
-		self._buffer.append(struct.pack('<I', numUs))
-
-	def SetAuxReset(self, outputEnable, resetState):
-		self._buffer.append(chr(jcbSetAuxReset))
-		self._buffer.append(chr(outputEnable << 1 | resetState))
 
 
 _DjtgGetVersion = _djtg.DjtgGetVersion
@@ -184,26 +115,26 @@ def DjtgSetSpeed(hif, frqReq):
 	return (_DjtgSetSpeed(hif, frqReq, ctypes.byref(frqSet)), frqSet.value)
 
 DjtgSetTmsTdiTck = _djtg.DjtgSetTmsTdiTck
-DjtgSetTmsTdiTck.argtypes = [HIF, ctypes.c_byte, ctypes.c_byte, ctypes.c_byte]
+DjtgSetTmsTdiTck.argtypes = [HIF, ctypes.c_ubyte, ctypes.c_ubyte, ctypes.c_ubyte]
 DjtgSetTmsTdiTck.restype = bool
 
 _DjtgGetTmsTdiTdoTck = _djtg.DjtgGetTmsTdiTdoTck
-_DjtgGetTmsTdiTdoTck.argtypes = [HIF, ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte)]
+_DjtgGetTmsTdiTdoTck.argtypes = [HIF, ctypes.POINTER(ctypes.c_ubyte), ctypes.POINTER(ctypes.c_ubyte), ctypes.POINTER(ctypes.c_ubyte), ctypes.POINTER(ctypes.c_ubyte)]
 _DjtgGetTmsTdiTdoTck.restype = bool
 
 def DjtgGetTmsTdiTdoTck(hif):
-	a = ctypes.c_byte()
-	b = ctypes.c_byte()
-	c = ctypes.c_byte()
-	d = ctypes.c_byte()
+	a = ctypes.c_ubyte()
+	b = ctypes.c_ubyte()
+	c = ctypes.c_ubyte()
+	d = ctypes.c_ubyte()
 	return (_DjtgGetTmsTdiTdoTck(hif, ctypes.byref(a), ctypes.byref(b), ctypes.byref(c), ctypes.byref(d)), a.value, b.value, c.value, d.value)
 
 DjtgSetAuxReset = _djtg.DjtgSetAuxReset
-DjtgSetAuxReset.argtypes = [HIF, ctypes.c_byte, ctypes.c_byte]
+DjtgSetAuxReset.argtypes = [HIF, ctypes.c_ubyte, ctypes.c_ubyte]
 DjtgSetAuxReset.restype = bool
 
 DjtgEnableTransBuffering = _djtg.DjtgEnableTransBuffering
-DjtgEnableTransBuffering.argtypes = [HIF, ctypes.c_byte]
+DjtgEnableTransBuffering.argtypes = [HIF, ctypes.c_ubyte]
 DjtgEnableTransBuffering.restype = bool
 
 DjtgSyncBuffer = _djtg.DjtgSyncBuffer
@@ -223,63 +154,63 @@ def DjtgWait(hif, tusWait):
 
 # overlapped functions
 DjtgPutTdiBits = _djtg.DjtgPutTdiBits
-DjtgPutTdiBits.argtypes = [HIF, ctypes.c_byte, ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte), ctypes.c_uint32, ctypes.c_byte]
+DjtgPutTdiBits.argtypes = [HIF, ctypes.c_ubyte, ctypes.POINTER(ctypes.c_ubyte), ctypes.POINTER(ctypes.c_ubyte), ctypes.c_uint32, ctypes.c_ubyte]
 DjtgPutTdiBits.restype = bool
 
 DjtgPutTmsBits = _djtg.DjtgPutTmsBits
-DjtgPutTmsBits.argtypes = [HIF, ctypes.c_byte, ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte), ctypes.c_uint32, ctypes.c_byte]
+DjtgPutTmsBits.argtypes = [HIF, ctypes.c_ubyte, ctypes.POINTER(ctypes.c_ubyte), ctypes.POINTER(ctypes.c_ubyte), ctypes.c_uint32, ctypes.c_ubyte]
 DjtgPutTmsBits.restype = bool
 
 DjtgPutTmsTdiBits = _djtg.DjtgPutTmsTdiBits
-DjtgPutTmsTdiBits.argtypes = [HIF, ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte), ctypes.c_uint32, ctypes.c_byte]
+DjtgPutTmsTdiBits.argtypes = [HIF, ctypes.POINTER(ctypes.c_ubyte), ctypes.POINTER(ctypes.c_ubyte), ctypes.c_uint32, ctypes.c_ubyte]
 DjtgPutTmsTdiBits.restype = bool
 
 DjtgGetTdoBits = _djtg.DjtgGetTdoBits
-DjtgGetTdoBits.argtypes = [HIF, ctypes.c_byte, ctypes.c_byte, ctypes.POINTER(ctypes.c_byte), ctypes.c_uint32, ctypes.c_byte]
+DjtgGetTdoBits.argtypes = [HIF, ctypes.c_ubyte, ctypes.c_ubyte, ctypes.POINTER(ctypes.c_ubyte), ctypes.c_uint32, ctypes.c_ubyte]
 DjtgGetTdoBits.restype = bool
 
 DjtgClockTck = _djtg.DjtgClockTck
-DjtgClockTck.argtypes = [HIF, ctypes.c_byte, ctypes.c_byte, ctypes.c_uint32, ctypes.c_byte]
+DjtgClockTck.argtypes = [HIF, ctypes.c_ubyte, ctypes.c_ubyte, ctypes.c_uint32, ctypes.c_ubyte]
 DjtgClockTck.restype = bool
 
 DjtgBatch = _djtg.DjtgBatch
-DjtgBatch.argtypes = [HIF, ctypes.c_uint32, ctypes.POINTER(ctypes.c_byte), ctypes.c_uint32, ctypes.POINTER(ctypes.c_byte), ctypes.c_byte]
+DjtgBatch.argtypes = [HIF, ctypes.c_uint32, ctypes.POINTER(ctypes.c_ubyte), ctypes.c_uint32, ctypes.POINTER(ctypes.c_ubyte), ctypes.c_ubyte]
 DjtgBatch.restype = bool
 
 
 # 1149.7-2009 configuration functions
 DjtgSetScanFormat = _djtg.DjtgSetScanFormat
-DjtgSetScanFormat.argtypes = [HIF, ctypes.c_byte, ctypes.c_byte]
+DjtgSetScanFormat.argtypes = [HIF, ctypes.c_ubyte, ctypes.c_ubyte]
 DjtgSetScanFormat.restype = bool
 
 DjtgGetScanFormat = _djtg.DjtgGetScanFormat
-DjtgGetScanFormat.argtypes = [HIF, ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_byte)]
+DjtgGetScanFormat.argtypes = [HIF, ctypes.POINTER(ctypes.c_ubyte), ctypes.POINTER(ctypes.c_ubyte)]
 DjtgGetScanFormat.restype = bool
 
 DjtgSetReadyCnt = _djtg.DjtgSetReadyCnt
-DjtgSetReadyCnt.argtypes = [HIF, ctypes.c_byte, ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(ctypes.c_uint32)]
+DjtgSetReadyCnt.argtypes = [HIF, ctypes.c_ubyte, ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(ctypes.c_uint32)]
 DjtgSetReadyCnt.restype = bool
 
 DjtgGetReadyCnt = _djtg.DjtgGetReadyCnt
-DjtgGetReadyCnt.argtypes = [HIF, ctypes.POINTER(ctypes.c_byte), ctypes.POINTER(ctypes.c_uint32)]
+DjtgGetReadyCnt.argtypes = [HIF, ctypes.POINTER(ctypes.c_ubyte), ctypes.POINTER(ctypes.c_uint32)]
 DjtgGetReadyCnt.restype = bool
 
 DjtgSetDelayCnt = _djtg.DjtgSetDelayCnt
-DjtgSetDelayCnt.argtypes = [HIF, ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint32), ctypes.c_byte]
+DjtgSetDelayCnt.argtypes = [HIF, ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint32), ctypes.c_ubyte]
 DjtgSetDelayCnt.restype = bool
 
 DjtgGetDelayCnt = _djtg.DjtgGetDelayCnt
-DjtgGetDelayCnt.argtypes = [HIF, ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(ctypes.c_byte)]
+DjtgGetDelayCnt.argtypes = [HIF, ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(ctypes.c_ubyte)]
 DjtgGetDelayCnt.restype = bool
 
 
 # 1149.7-2009 misc. functions
 DjtgCheckPacket = _djtg.DjtgCheckPacket
-DjtgCheckPacket.argtypes = [HIF, ctypes.c_byte, ctypes.c_byte, ctypes.c_byte]
+DjtgCheckPacket.argtypes = [HIF, ctypes.c_ubyte, ctypes.c_ubyte, ctypes.c_ubyte]
 DjtgCheckPacket.restype = bool
 
 DjtgEscape = _djtg.DjtgEscape
-DjtgEscape.argtypes = [HIF, ctypes.c_byte, ctypes.c_byte]
+DjtgEscape.argtypes = [HIF, ctypes.c_ubyte, ctypes.c_ubyte]
 DjtgEscape.restype = bool
 
 
@@ -291,9 +222,7 @@ __all__ = [
 	'jtgsfNone', 'jtgsfJScan0', 'jtgsfJScan1', 'jtgsfJScan2', 'jtgsfJScan3', 'jtgsfMScan',
 	'jtgsfOScan0', 'jtgsfOScan1', 'jtgsfOScan2', 'jtgsfOScan3', 'jtgsfOScan4', 'jtgsfOScan5',
 	'jtgsfOScan6', 'jtgsfOScan7', 'cedgeJtgCustom', 'cedgeJtgDeselect', 'cedgeJtgSelect',
-	'cedgeJtgReset', 'jcbSetTmsTdiTck', 'jcbGetTmsTdiTdoTck', 'jcbPutTms', 'jcbPutTmsGetTdo',
-	'jcbPutTdi', 'jcbPutTdiGetTdo', 'jcbGetTdo', 'jcbClockTck', 'jcbWaitUs', 'jcbSetAuxReset',
-	'djbpWaitUs', 'djbpSetAuxReset', 'JtagBatchBuffer', 'DjtgGetVersion', 'DjtgGetPortCount',
+	'cedgeJtgReset', 'djbpWaitUs', 'djbpSetAuxReset', 'DjtgGetVersion', 'DjtgGetPortCount',
 	'DjtgGetPortProperties', 'DjtgGetBatchProperties', 'DjtgEnable', 'DjtgEnableEx', 'DjtgDisable',
 	'DjtgGetSpeed', 'DjtgSetSpeed', 'DjtgSetTmsTdiTck', 'DjtgGetTmsTdiTdoTck', 'DjtgSetAuxReset',
 	'DjtgEnableTransBuffering', 'DjtgSyncBuffer', 'DjtgWait', 'DjtgPutTdiBits', 'DjtgPutTmsBits',

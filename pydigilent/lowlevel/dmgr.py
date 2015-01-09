@@ -41,8 +41,7 @@ _DmgrOpen.restype = bool
 
 def DmgrOpen(szSel):
 	hif = HIF()
-	tmp = ctypes.create_string_buffer(szSel)
-	return (_DmgrOpen(ctypes.byref(hif), ctypes.byref(tmp)), hif)
+	return (_DmgrOpen(ctypes.byref(hif), szSel), hif)
 
 _DmgrOpenEx = _dmgr.DmgrOpenEx
 _DmgrOpenEx.argtypes = [ctypes.POINTER(HIF), ctypes.c_char_p, DTP, DTP]
@@ -50,8 +49,7 @@ _DmgrOpenEx.restype = bool
 
 def DmgrOpenEx(szSel, dtpTable, dtpDisc):
 	hif = HIF()
-	tmp = ctypes.create_string_buffer(szSel)
-	return (_DmgrOpenEx(ctypes.byref(hif), ctypes.byref(tmp), dtpTable, dtpDisc), hif)
+	return (_DmgrOpenEx(ctypes.byref(hif), szSel, dtpTable, dtpDisc), hif)
 
 DmgrClose = _dmgr.DmgrClose
 DmgrClose.argtypes = [HIF]
@@ -145,13 +143,9 @@ DmgrDvcTblAdd = _dmgr.DmgrDvcTblAdd
 DmgrDvcTblAdd.argtypes = [ctypes.POINTER(DVC)]
 DmgrDvcTblAdd.restype = bool
 
-_DmgrDvcTblRem = _dmgr.DmgrDvcTblRem
-_DmgrDvcTblRem.argtypes = [ctypes.c_char_p]
-_DmgrDvcTblRem.restype = bool
-
-def DmgrDvcTblRem(szAlias):
-	tmp = ctypes.create_string_buffer(szAlias)
-	return _DmgrDvcTblRem(ctypes.byref(tmp))
+DmgrDvcTblRem = _dmgr.DmgrDvcTblRem
+DmgrDvcTblRem.argtypes = [ctypes.c_char_p]
+DmgrDvcTblRem.restype = bool
 
 DmgrDvcTblSave = _dmgr.DmgrDvcTblSave
 DmgrDvcTblSave.argtypes = []
@@ -172,7 +166,7 @@ def DmgrGetDtpFromIndex(idtp):
 	return (_DmgrGetDtpFromIndex(idtp, ctypes.byref(dtp)), dtp)
 
 _DmgrGetDtpString = _dmgr.DmgrGetDtpString
-_DmgrGetDtpString.argtypes = [DTP, ctypes.c_char_p]
+_DmgrGetDtpString.argtypes = [DTP, ctypes.POINTER(ctypes.c_char)]
 _DmgrGetDtpString.restype = bool
 
 def DmgrGetDtpString(dtp):

@@ -18,7 +18,7 @@ class DeviceHandle(object):
 
 	def close(self):
 		if self._jtag is not None:
-			self._jtag.close()
+			self._jtag.disable()
 
 		try:
 			DeviceManager.close(self._hif)
@@ -145,6 +145,7 @@ class Device(object):
 	def open(self):
 		handle = DeviceManager.open(self.user_name)
 		handle._device = self
+		return handle
 
 
 class DeviceManagerError(Exception):
