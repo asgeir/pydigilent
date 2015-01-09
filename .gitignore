@@ -1,1 +1,5 @@
 *.pyc
+
+build/
+dist/
+pydigilent.egg-info/
