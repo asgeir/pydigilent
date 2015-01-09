@@ -2,6 +2,7 @@ import ctypes
 import sys
 
 from common import ERC, DINFO, HIF, DTP, DVC
+from common import dinfoUsrName, dinfoAlias, dinfoProdName, dinfoPDID, dinfoSN, dinfoIP, dinfoMAC, dinfoDCAP, dinfoProdID, dinfoOpenCount, dinfoFWVER
 
 if sys.platform.startswith("win"):
 	_dmgr = ctypes.cdll.dmgr
@@ -180,13 +181,66 @@ def DmgrGetDtpString(dtp):
 
 
 #Miscellaneous functions
-DmgrSetInfo = _dmgr.DmgrSetInfo
-DmgrSetInfo.argtypes = [ctypes.POINTER(DVC), DINFO, ctypes.c_void_p]
-DmgrSetInfo.restype = bool
+_DmgrSetInfo = _dmgr.DmgrSetInfo
+_DmgrSetInfo.argtypes = [ctypes.POINTER(DVC), DINFO, ctypes.c_void_p]
+_DmgrSetInfo.restype = bool
 
-DmgrGetInfo = _dmgr.DmgrGetInfo
-DmgrGetInfo.argtypes = [ctypes.POINTER(DVC), DINFO, ctypes.c_void_p]
-DmgrGetInfo.restype = bool
+def DmgrSetInfo(dvc, dinfo, data):
+	if dinfo == dinfoUsrName:
+		value = ctypes.create_string_buffer(data, 16)
+		return _DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value))
+	elif dinfo == dinfoAlias:
+		value = ctypes.create_string_buffer(data, 16)
+		return _DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value))
+	elif dinfo == dinfoIP:
+		value = ctypes.create_string_buffer(data, 64)
+		return _DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value))
+	elif dinfo == dinfoMAC:
+		value = ctypes.create_string_buffer(data, 64)
+		return _DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value))
+	else:
+		return False
+
+_DmgrGetInfo = _dmgr.DmgrGetInfo
+_DmgrGetInfo.argtypes = [ctypes.POINTER(DVC), DINFO, ctypes.c_void_p]
+_DmgrGetInfo.restype = bool
+
+def DmgrGetInfo(dvc, dinfo):
+	if dinfo == dinfoUsrName:
+		value = ctypes.create_string_buffer(16)
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	elif dinfo == dinfoAlias:
+		value = ctypes.create_string_buffer(16)
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	elif dinfo == dinfoProdName:
+		value = ctypes.create_string_buffer(28)
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	elif dinfo == dinfoPDID:
+		value = ctypes.c_uint32()
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	elif dinfo == dinfoSN:
+		value = ctypes.create_string_buffer(15)
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	elif dinfo == dinfoIP:
+		value = ctypes.create_string_buffer(64)
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	elif dinfo == dinfoMAC:
+		value = ctypes.create_string_buffer(64)
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	elif dinfo == dinfoDCAP:
+		value = ctypes.c_uint32()
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	elif dinfo == dinfoProdID:
+		value = ctypes.c_uint32()
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	elif dinfo == dinfoOpenCount:
+		value = ctypes.c_uint32()
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	elif dinfo == dinfoFWVER:
+		value = ctypes.c_uint16()
+		return (_DmgrGetInfo(ctypes.byref(dvc), dinfo, ctypes.byref(value)), value.value)
+	else:
+		return (False, None)
 
 
 _DmgrGetDvcFromHif = _dmgr.DmgrGetDvcFromHif
