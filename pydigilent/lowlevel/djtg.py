@@ -1,7 +1,7 @@
 import ctypes
 import sys
 
-from common import HIF
+from pydigilent.lowlevel.common import HIF
 
 if sys.platform.startswith("win"):
 	_djtg = ctypes.cdll.djtg

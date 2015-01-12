@@ -1,8 +1,9 @@
 import ctypes
 import sys
 
-from common import ERC, DINFO, HIF, DTP, DVC
-from common import dinfoUsrName, dinfoAlias, dinfoProdName, dinfoPDID, dinfoSN, dinfoIP, dinfoMAC, dinfoDCAP, dinfoProdID, dinfoOpenCount, dinfoFWVER
+from pydigilent.lowlevel.common import ERC, DINFO, HIF, DTP, DVC
+from pydigilent.lowlevel.common import dinfoUsrName, dinfoAlias, dinfoProdName, dinfoPDID
+from pydigilent.lowlevel.common import dinfoSN, dinfoIP, dinfoMAC, dinfoDCAP, dinfoProdID, dinfoOpenCount, dinfoFWVER
 
 if sys.platform.startswith("win"):
 	_dmgr = ctypes.cdll.dmgr

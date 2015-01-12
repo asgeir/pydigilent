@@ -1,2 +1,2 @@
-from device import *
-from djtg import *
+from pydigilent.device import *
+from pydigilent.djtg import *

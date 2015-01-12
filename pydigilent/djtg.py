@@ -1,6 +1,6 @@
 import struct
-import lowlevel
-from util import djtg as djtg_util
+from pydigilent import lowlevel
+from pydigilent.util import djtg as djtg_util
 
 class JtagError(Exception):
 	def __init__(self, name, desc):

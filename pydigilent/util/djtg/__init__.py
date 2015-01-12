@@ -1,1 +1,1 @@
-from tap import *
+from pydigilent.util.djtg.tap import *

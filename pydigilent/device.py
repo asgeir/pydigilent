@@ -1,5 +1,5 @@
-import lowlevel
-import djtg
+from pydigilent import lowlevel
+from pydigilent import djtg
 
 class DeviceHandle(object):
 	def __init__(self, hif):
