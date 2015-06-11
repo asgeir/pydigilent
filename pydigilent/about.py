@@ -4,7 +4,7 @@ title = 'pydigilent'
 description = 'A Python wrapper for Digilent Adept and Waveforms SDKs'
 url = 'https://github.com/asgeir/pydigilent'
 
-version = '0.3.0'
+version = '0.4.0'
 
 author = 'Asgeir Bjarni Ingvarsson'
 email = 'asgeir@fundinn.org'

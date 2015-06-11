@@ -3,6 +3,8 @@ import sys
 
 if sys.platform.startswith("win"):
 	_dwf = ctypes.cdll.dwf
+elif sys.platform.startswith("darwin"):
+	_dwf = ctypes.cdll.LoadLibrary("libdwf.dylib")
 else:
 	_dwf = ctypes.cdll.LoadLibrary("libdwf.so")
 
