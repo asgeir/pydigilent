@@ -1,5 +1,6 @@
 from pydigilent import lowlevel
 from pydigilent import djtg
+from pydigilent import depp
 
 class DeviceHandle(object):
 	def __init__(self, hif):
@@ -8,6 +9,7 @@ class DeviceHandle(object):
 		self._hif = hif
 		self._device = None
 		self._jtag = None
+		self._epp = None
 
 	@property
 	def jtag(self):
@@ -15,6 +17,13 @@ class DeviceHandle(object):
 			self._jtag = djtg.Jtag(self._hif)
 
 		return self._jtag
+
+	@property
+	def epp(self):
+		if self._epp is None and (self._device.capabilities & Device.DEVICE_CAPABILITIES_EPP) != 0:
+			self._epp = depp.EPP(self._hif)
+
+		return self._epp
 
 	def close(self):
 		if self._jtag is not None:
