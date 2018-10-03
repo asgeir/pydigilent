@@ -46,7 +46,7 @@ class EPP(object):
                 raise EPPError('General EPP Error', 'Unable to enable specified epp port')
 
     def disable(self):
-        lowlevel.DjtgDisable(self._hif)
+        lowlevel.DeppDisable(self._hif)
 
     def put_reg(self, addr, data, overlap=False):
         if not lowlevel.DeppPutReg(self._hif, addr, data, overlap):
