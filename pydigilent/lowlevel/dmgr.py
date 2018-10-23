@@ -137,7 +137,7 @@ def DmgrGetTransTimeout(hif):
 #DVC Table manipulation functions
 if sys.platform.startswith("win"):
 	DmgrOpenDvcMg = _dmgr.DmgrOpenDvcMg  # opens device manager dialog box
-	DmgrOpenDvcMg.argtypes = ['dunno']
+	DmgrOpenDvcMg.argtypes = [ctypes.c_uint32] # ['dunno']
 	DmgrOpenDvcMg.restype = bool
 
 DmgrDvcTblAdd = _dmgr.DmgrDvcTblAdd
