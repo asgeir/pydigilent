@@ -46,7 +46,7 @@ class EPP(object):
                 raise EPPError('General EPP Error', 'Unable to enable specified epp port')
 
     def disable(self):
-        lowlevel.DjtgDisable(self._hif)
+        lowlevel.DeppDisable(self._hif)
 
     def put_reg(self, addr, data, overlap=False):
         if not lowlevel.DeppPutReg(self._hif, addr, data, overlap):
@@ -60,7 +60,7 @@ class EPP(object):
 
     def put_reg_set(self, addr_datas, overlap=False):
         import ctypes
-        buf = (ctypes.c_ubyte * len(addr_datas) * 2)()
+        buf = (ctypes.c_ubyte * (len(addr_datas) * 2))()
         for i in range(len(addr_datas)):
             buf[2*i] = addr_datas[i][0]
             buf[2*i+1] = addr_datas[i][1]
