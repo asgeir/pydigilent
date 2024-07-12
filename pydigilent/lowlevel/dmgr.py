@@ -42,7 +42,7 @@ _DmgrOpen.restype = bool
 
 def DmgrOpen(szSel):
 	hif = HIF()
-	return (_DmgrOpen(ctypes.byref(hif), szSel), hif)
+	return (_DmgrOpen(ctypes.byref(hif), ctypes.c_char_p(szSel.encode('utf-8'))), hif)
 
 _DmgrOpenEx = _dmgr.DmgrOpenEx
 _DmgrOpenEx.argtypes = [ctypes.POINTER(HIF), ctypes.c_char_p, DTP, DTP]

@@ -122,7 +122,7 @@ class Jtag(object):
 		self._hif = hif
 
 	@classmethod
-	def get_version(cls):
+	def get_version(self):
 		(ok, version) = lowlevel.DjtgGetVersion()
 		if not ok:
 			raise JtagError('General Jtag Error', 'Unable to fetch DJTG library version string')
