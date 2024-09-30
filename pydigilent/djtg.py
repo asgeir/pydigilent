@@ -251,7 +251,7 @@ class Jtag(object):
 
 	def get_tdo_bits(self, tdi, tms, cbits, overlap=False):
 		import ctypes
-		recv_buffer = (ctypes.c_ubyte * (((cbits + 7) & ~7) / 8))()
+		recv_buffer = (ctypes.c_ubyte * int(((cbits + 7) & ~7) / 8))()
 
 		if not lowlevel.DjtgGetTdoBits(self._hif, tdi, tms, recv_buffer, cbits, overlap):
 			raise JtagError('General Jtag Error', 'Unable to fetch tdo bits')

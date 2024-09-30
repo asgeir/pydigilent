@@ -152,7 +152,7 @@ class Device(object):
 		return self._firmware_version
 
 	def open(self):
-		handle = DeviceManager.open(self.user_name)
+		handle = DeviceManager.open(self.user_name.decode("utf-8"))
 		handle._device = self
 		return handle
 
